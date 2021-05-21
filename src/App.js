@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-/// Modifica el componente para que se puedan agregar tareas, tachar y destacharlas y error de validacion en el input
+
 
 class App extends Component {
   constructor() {
@@ -14,16 +14,38 @@ class App extends Component {
       newTask: ''
     }
   }
+
+  updateName(event) {
+    this.setState({
+      newTask: event.target.value
+    });
+  }
+
+  sendName(event) {
+    event.preventDefault();
+    this.setState({
+      tasks: this.state.tasks.concat({id:this.state.tasks.length + 1,name:this.state.newTask,done: false})
+    });
+    this.state.newTask = ""
+  }
+
+  done(value,index){
+    this.setState((tasks) => {
+      tasks.tasks[index].done = value
+      return {...tasks,...tasks.tasks[index].done}; // return new object jasper object
+    });
+  }
+
   render() {
     return (
       <div className="wrapper">
         <div className="list">
           <h3>Por hacer:</h3>
           <ul className="todo">
-            {this.state.tasks.map((task, index) => <li key={task.id}>{task.name}</li>)}
+            {this.state.tasks.map((task, index) => <li onClick={(e) => this.done(!task.done,index)} className={task.done===true ? "done" : "" } key={task.id} data-letter={task.id}>{task.name}</li>)}
           </ul>
-          <form>
-            <input type="text" id="new-task" placeholder="Ingresa una tarea y oprime Enter" value={this.state.newTask} />
+          <form onSubmit={this.sendName.bind(this)}>
+            <input required className={this.state.newTask ? "": "error"} type="text" id="new-task" placeholder="Ingresa una tarea y oprime Enter" value={this.state.newTask} onChange={this.updateName.bind(this)} />
           </form>
         </div>
       </div>
